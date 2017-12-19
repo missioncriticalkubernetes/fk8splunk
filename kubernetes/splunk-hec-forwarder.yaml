@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk
+  namespace: kube-system
+spec:
+  selector:
+    app: splunk
+  ports:
+  - protocol: TCP
+    port: 8088
+    targetPort: 8088
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: splunk
+  namespace: kube-system
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: splunk
+    spec:
+      containers:
+      - name: splunk
+        image: splunk/splunk:7.0.0-monitor
+        env:
+        - name: SPLUNK_START_ARGS
+          value: "--accept-license"
+        - name: SPLUNK_ENABLE_DEPLOY_SERVER
+          value: "false"
+        - name: SPLUNK_FORWARD_SERVER_1
+          value: "example.com:9997"
+        ports:
+        - containerPort: 8088
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

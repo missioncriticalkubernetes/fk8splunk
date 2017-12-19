@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fk8splunk
+  namespace: kube-system
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: fk8splunk
+  namespace: kube-system
+  labels:
+    app: fk8splunk
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 3
+  template:
+    metadata:
+      labels:
+       app: fk8splunk
+    spec:
+      tolerations:
+      - operator: "Exists"
+      serviceAccount: fk8splunk
+      containers:
+      - name: fk8splunk
+        image: missioncriticalkubernetes/fk8splunk:1.0.0
+        imagePullPolicy: Always
+        args:
+        - -q
+        env:
+        - name: SPLUNK_HOST
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_HOST
+        - name: SPLUNK_PORT
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_PORT
+        - name: SPLUNK_INDEX
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_INDEX
+        - name: SPLUNK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_TOKEN
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eufo pipefail
+
+export SPLUNK_HOST=${SPLUNK_ADDR:-splunk.kube-system}
+export SPLUNK_PORT=${SPLUNK_PORT:-8088}
+export SPLUNK_INDEX=${SPLUNK_INDEX:-main}
+export SPLUNK_TOKEN=${SPLUNK_TOKEN:-00000000-0000-0000-0000-000000000000}
+
+confdir="/etc/td-agent"
+
+cat ${confdir}/td-agent.conf.template | envsubst '$SPLUNK_HOST $SPLUNK_PORT $SPLUNK_INDEX $SPLUNK_TOKEN' > ${confdir}/td-agent.conf
+exec fluentd -c ${confdir}/td-agent.conf "$@"
