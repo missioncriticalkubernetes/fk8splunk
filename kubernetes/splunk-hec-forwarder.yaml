@@ -18,16 +18,17 @@ metadata:
   name: splunk
   namespace: kube-system
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     rollingUpdate:
-      maxSurge: 0
+      maxSurge: 1
       maxUnavailable: 1
   template:
     metadata:
       labels:
         app: splunk
     spec:
+      serviceAccount: fk8splunk
       containers:
       - name: splunk
         image: splunk/splunk:7.0.0-monitor
@@ -46,4 +47,4 @@ spec:
             memory: 256Mi
           limits:
             cpu: 200m
-            memory: 256Mi
+            memory: 378Mi
