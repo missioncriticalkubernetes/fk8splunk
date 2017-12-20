@@ -4,10 +4,16 @@ set -eufo pipefail
 
 export SPLUNK_HOST=${SPLUNK_ADDR:-splunk.kube-system}
 export SPLUNK_PORT=${SPLUNK_PORT:-8088}
-export SPLUNK_INDEX=${SPLUNK_INDEX:-main}
+export SPLUNK_PROTOCOL=${SPLUNK_PROTOCOL:-https}
 export SPLUNK_TOKEN=${SPLUNK_TOKEN:-00000000-0000-0000-0000-000000000000}
+export SPLUNK_INDEX=${SPLUNK_INDEX:-main}
+export SPLUNK_SOURCE=${SPLUNK_SOURCE:-fluentd}
+export SPLUNK_SOURCETYPE=${SPLUNK_SOURCETYPE:-kubernetes}
+export SPLUNK_USEJSON=${SPLUNK_USEJSON:-true}
+export SPLUNK_SEND_EVENT_AS_JSON=${SPLUNK_SEND_EVENT_AS_JSON:-true}
+export SPLUNK_SEND_BATCHED_EVENTS=${SPLUNK_SEND_BATCHED_EVENTS:-false}
 
 confdir="/etc/td-agent"
 
-cat ${confdir}/td-agent.conf.template | envsubst '$SPLUNK_HOST $SPLUNK_PORT $SPLUNK_INDEX $SPLUNK_TOKEN' > ${confdir}/td-agent.conf
+cat ${confdir}/td-agent.conf.template | envsubst '$SPLUNK_HOST $SPLUNK_PORT $SPLUNK_PROTOCOL $SPLUNK_TOKEN $SPLUNK_INDEX $SPLUNK_SOURCE $SPLUNK_SOURCETYPE $SPLUNK_USEJSON $SPLUNK_SEND_EVENT_AS_JSON $SPLUNK_SEND_BATCHED_EVENTS' > ${confdir}/td-agent.conf
 exec fluentd -c ${confdir}/td-agent.conf "$@"
