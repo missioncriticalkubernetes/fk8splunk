@@ -2,7 +2,7 @@
 
 set -eufo pipefail
 
-export SPLUNK_HOST=${SPLUNK_ADDR:-splunk.kube-system}
+export SPLUNK_HOST=${SPLUNK_HOST:-splunk.kube-system}
 export SPLUNK_PORT=${SPLUNK_PORT:-8088}
 export SPLUNK_PROTOCOL=${SPLUNK_PROTOCOL:-https}
 export SPLUNK_TOKEN=${SPLUNK_TOKEN:-00000000-0000-0000-0000-000000000000}
