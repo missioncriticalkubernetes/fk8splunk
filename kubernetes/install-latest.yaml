@@ -26,7 +26,7 @@ spec:
       serviceAccount: fk8splunk
       containers:
       - name: fk8splunk
-        image: missioncriticalkubernetes/fk8splunk:1.1.0
+        image: missioncriticalkubernetes/fk8splunk:1.1.1
         imagePullPolicy: Always
         args:
         - -q
