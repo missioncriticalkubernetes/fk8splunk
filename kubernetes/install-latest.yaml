@@ -31,6 +31,11 @@ spec:
         args:
         - -q
         env:
+        - name: SPLUNK_PROTOCOL
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_PROTOCOL
         - name: SPLUNK_HOST
           valueFrom:
             secretKeyRef:
