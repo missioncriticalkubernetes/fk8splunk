@@ -2,13 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: fk8splunk
-  namespace: kube-system
+  namespace: logging
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: fk8splunk
-  namespace: kube-system
+  namespace: logging
   labels:
     app: fk8splunk
 spec:

@@ -10,7 +10,8 @@ Original can be found [here](https://github.com/ziyasal/k8splunk)
 
 * Splunk HTTP Event Collector (HEC)-address
 * HEC-token
-* Kubernetes cluster and write access to the `kube-system`-namespace
+* Kubernetes cluster and write access to the `logging`-namespace
+  - `kubectl create namespace logging`
 * When using `PodSecurityPolicy`s, make sure you grant the `fk8splunk` service-account access to use `hostPath` volume-mounts.
 
 # Installation
