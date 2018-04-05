@@ -44,3 +44,19 @@ kubectl apply -f https://raw.githubusercontent.com/missioncriticalkubernetes/fk8
 ```
 
 The forwarder will be configured with the value of `SPLUNKHEC_OPTION_token` from the `fk8splunk` secret.
+
+# Configuration
+
+## fluent-plugin-splunkhec
+
+Specify your configuration in environment-variables like this:
+  * `SPLUNKHEC_OPTION_host=example.com` becomes `host example.com` inside the output block in fluentd
+
+For a list of all options see: https://github.com/cmeerbeek/fluent-plugin-splunkhec
+
+## fluent-plugin-kubernetes_metadata_filter
+
+Specify your configuration in environment-variables like this:
+  * `K8S_METADATA_FILTER_OPTION_preserve_json_log=false` becomes `preserve_json_log false` inside the filter block in fluentd
+
+For a list of all options see: https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
