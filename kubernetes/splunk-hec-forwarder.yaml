@@ -40,11 +40,11 @@ spec:
         - name: init-hec-inputs
           mountPath: /init
         env:
-        - name: SPLUNK_TOKEN
+        - name: SPLUNKHEC_OPTION_token
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_TOKEN
+              key: SPLUNKHEC_OPTION_token
         command:
           - sh
           - -c

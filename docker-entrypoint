@@ -2,18 +2,74 @@
 
 set -eufo pipefail
 
-export SPLUNK_HOST=${SPLUNK_HOST:-splunk.kube-system}
-export SPLUNK_PORT=${SPLUNK_PORT:-8088}
-export SPLUNK_PROTOCOL=${SPLUNK_PROTOCOL:-https}
-export SPLUNK_TOKEN=${SPLUNK_TOKEN:-00000000-0000-0000-0000-000000000000}
-export SPLUNK_INDEX=${SPLUNK_INDEX:-main}
-export SPLUNK_SOURCE=${SPLUNK_SOURCE:-fluentd}
-export SPLUNK_SOURCETYPE=${SPLUNK_SOURCETYPE:-kubernetes}
-export SPLUNK_USEJSON=${SPLUNK_USEJSON:-true}
-export SPLUNK_SEND_EVENT_AS_JSON=${SPLUNK_SEND_EVENT_AS_JSON:-true}
-export SPLUNK_SEND_BATCHED_EVENTS=${SPLUNK_SEND_BATCHED_EVENTS:-false}
+function splunk_deprecated_options() {
+  for option in $(env | grep '^SPLUNK_'); do
+    echo >&2 "WARNING: Deprecated option used. This will be removed in the future. Please use SPLUNKHEC_OPTION_key=value: '${option/=*/}'"
+  done
+}
+
+function splunkhec_compatability_options() {
+  for option in $(env | grep '^SPLUNK_'); do
+    option=${option/SPLUNK_/SPLUNKHEC_OPTION_}
+
+    key_upper=${option/SPLUNKHEC_OPTION_/}
+    key_upper=${key_upper/=*/}
+    key_lower=$(echo ${key_upper} | tr '[:upper:]' '[:lower:]')
+
+    option=${option/${key_upper}/${key_lower}}
+    export ${option}
+  done
+}
+
+function splunkhec_default_options() {
+  export SPLUNKHEC_OPTION_host=${SPLUNKHEC_OPTION_host:-splunk.kube-system}
+  export SPLUNKHEC_OPTION_protocol=${SPLUNKHEC_OPTION_protocol:-https}
+  export SPLUNKHEC_OPTION_port=${SPLUNKHEC_OPTION_port:-8088}
+  export SPLUNKHEC_OPTION_token=${SPLUNKHEC_OPTION_token:-00000000-0000-0000-0000-000000000000}
+  export SPLUNKHEC_OPTION_sourcetype=${SPLUNKHEC_OPTION_sourcetype:-kubernetes}
+  export SPLUNKHEC_OPTION_send_event_as_json=${SPLUNKHEC_OPTION_send_event_as_json:-true}
+  export SPLUNKHEC_OPTION_usejson=${SPLUNKHEC_OPTION_usejson:-true}
+}
+
+function splunkhec_final_options() {
+  SPLUNKHEC_OPTIONS=""
+
+  for option in $(env | grep '^SPLUNKHEC_OPTION_'); do
+    option=${option/SPLUNKHEC_OPTION_/}
+    option=${option/=/ }
+    SPLUNKHEC_OPTIONS=$(echo -e "${SPLUNKHEC_OPTIONS}\n  ${option}")
+  done
+
+  export SPLUNKHEC_OPTIONS
+}
+
+function k8s_metadata_filter_default_options() {
+  export K8S_METADATA_FILTER_OPTION_preserve_json_log=${K8S_METADATA_FILTER_OPTION_preserve_json_log:-"false"}
+}
+
+function k8s_metadata_filter_final_options() {
+  K8S_METADATA_FILTER_OPTIONS=""
+
+  for option in $(env | grep '^K8S_METADATA_FILTER_OPTION_'); do
+    option=${option/K8S_METADATA_FILTER_OPTION_/}
+    option=${option/=/ }
+    K8S_METADATA_FILTER_OPTIONS=$(echo -e "${K8S_METADATA_FILTER_OPTIONS}\n  ${option}")
+  done
+
+  export K8S_METADATA_FILTER_OPTIONS
+}
+
+# Generate configuration and exec into fluentd
+
+splunk_deprecated_options
+splunkhec_compatability_options
+splunkhec_default_options
+splunkhec_final_options
+
+k8s_metadata_filter_default_options
+k8s_metadata_filter_final_options
 
 confdir="/etc/td-agent"
 
-cat ${confdir}/td-agent.conf.template | envsubst '$SPLUNK_HOST $SPLUNK_PORT $SPLUNK_PROTOCOL $SPLUNK_TOKEN $SPLUNK_INDEX $SPLUNK_SOURCE $SPLUNK_SOURCETYPE $SPLUNK_USEJSON $SPLUNK_SEND_EVENT_AS_JSON $SPLUNK_SEND_BATCHED_EVENTS' > ${confdir}/td-agent.conf
+cat ${confdir}/td-agent.conf.template | envsubst '$K8S_METADATA_FILTER_OPTIONS $SPLUNKHEC_OPTIONS' > ${confdir}/td-agent.conf
 exec fluentd -c ${confdir}/td-agent.conf "$@"

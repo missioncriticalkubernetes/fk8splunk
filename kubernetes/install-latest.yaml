@@ -26,38 +26,38 @@ spec:
       serviceAccount: fk8splunk
       containers:
       - name: fk8splunk
-        image: missioncriticalkubernetes/fk8splunk:1.1.1
+        image: missioncriticalkubernetes/fk8splunk:1.2.0
         imagePullPolicy: Always
         args:
         - -q
         env:
-        - name: SPLUNK_HOST
+        - name: SPLUNKHEC_OPTION_host
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_HOST
-        - name: SPLUNK_PORT
+              key: SPLUNKHEC_OPTION_host
+        - name: SPLUNKHEC_OPTION_port
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_PORT
-        - name: SPLUNK_INDEX
+              key: SPLUNKHEC_OPTION_port
+        - name: SPLUNKHEC_OPTION_index
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_INDEX
-        - name: SPLUNK_TOKEN
+              key: SPLUNKHEC_OPTION_index
+        - name: SPLUNKHEC_OPTION_token
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_TOKEN
+              key: SPLUNKHEC_OPTION_token
         resources:
           requests:
-            cpu: 10m
-            memory: 256Mi
+            cpu: 200m
+            memory: 512Mi
           limits:
             cpu: 200m
-            memory: 256Mi
+            memory: 512Mi
         volumeMounts:
         - name: varlog
           mountPath: /var/log
