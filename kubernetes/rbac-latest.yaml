@@ -9,4 +9,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: fk8splunk
-    namespace: kube-system
+    namespace: logging

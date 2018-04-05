@@ -10,7 +10,8 @@ Original can be found [here](https://github.com/ziyasal/k8splunk)
 
 * Splunk HTTP Event Collector (HEC)-address
 * HEC-token
-* Kubernetes cluster and write access to the `kube-system`-namespace
+* Kubernetes cluster and write access to the `logging`-namespace
+  - `kubectl create namespace logging`
 * When using `PodSecurityPolicy`s, make sure you grant the `fk8splunk` service-account access to use `hostPath` volume-mounts.
 
 # Installation
@@ -25,7 +26,7 @@ export SPLUNK_TOKEN="C2CE8936-73B5-4BBA-9EE2-312A70279AD3"
 export SPLUNK_TOKEN=$(uuidgen)
 
 # Create a secret to hold your Splunk configuration
-kubectl -n kube-system create secret generic fk8splunk --from-literal=SPLUNK_HOST=splunk.kube-system --from-literal=SPLUNK_PORT=8088 --from-literal=SPLUNK_INDEX=main --from-literal=SPLUNK_TOKEN=${SPLUNK_TOKEN}
+kubectl -n logging create secret generic fk8splunk --from-literal=SPLUNK_HOST=splunk.logging --from-literal=SPLUNK_PORT=8088 --from-literal=SPLUNK_INDEX=main --from-literal=SPLUNK_TOKEN=${SPLUNK_TOKEN}
 
 # Install the daemonset
 kubectl apply -f https://raw.githubusercontent.com/missioncriticalkubernetes/fk8splunk/master/kubernetes/install-latest.yaml
