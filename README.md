@@ -17,8 +17,15 @@ Original can be found [here](https://github.com/ziyasal/k8splunk)
 
 ## Fluentd log forwarder
 ```
+# export our Splunk HEC token (use your own)
+export SPLUNK_TOKEN="C2CE8936-73B5-4BBA-9EE2-312A70279AD3"
+
+# Or generate a UUID to act as Splunk HEC token if you're using the Splunk forwarder below
+# For example, on MacOSX:
+export SPLUNK_TOKEN=$(uuidgen)
+
 # Create a secret to hold your Splunk configuration
-kubectl -n kube-system create secret generic fk8splunk --from-literal=SPLUNK_HOST=splunk.kube-system --from-literal=SPLUNK_PORT=8088 --from-literal=SPLUNK_INDEX=main --from-literal=SPLUNK_TOKEN=00000000-0000-0000-0000-000000000000
+kubectl -n kube-system create secret generic fk8splunk --from-literal=SPLUNK_HOST=splunk.kube-system --from-literal=SPLUNK_PORT=8088 --from-literal=SPLUNK_INDEX=main --from-literal=SPLUNK_TOKEN=${SPLUNK_TOKEN}
 
 # Install the daemonset
 kubectl apply -f https://raw.githubusercontent.com/missioncriticalkubernetes/fk8splunk/master/kubernetes/install-latest.yaml
@@ -35,4 +42,4 @@ Can't enable an HTTP Event Collector on your Splunk? Stuck with traditional forw
 kubectl apply -f https://raw.githubusercontent.com/missioncriticalkubernetes/fk8splunk/master/kubernetes/splunk-hec-forwarder.yaml
 ```
 
-The default token is `00000000-0000-0000-0000-000000000000`.
+The forwarder will be configured with the value of `SPLUNK_TOKEN` from the `fk8splunk` secret.
