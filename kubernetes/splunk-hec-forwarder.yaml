@@ -63,7 +63,9 @@ spec:
         - name: SPLUNK_FORWARD_SERVER_1
           value: "example.com:9997"
         - name: SPLUNK_CMD_1
-          value: http-event-collector enable -uri https://localhost:8089 -enable-ssl 1 -auth admin:changeme
+          value: edit user admin -password fk8splunk-s3cr3t -role admin -auth admin:changeme
+        - name: SPLUNK_CMD_2
+          value: http-event-collector enable -uri https://localhost:8089 -enable-ssl 1 -auth admin:fk8splunk-s3cr3t
         ports:
         - containerPort: 8088
         resources:
@@ -78,7 +80,7 @@ spec:
             port: 8088
             path: /services/collector/health
             scheme: HTTPS
-          initialDelaySeconds: 120
+          initialDelaySeconds: 15
           periodSeconds: 10
           failureThreshold: 3
           successThreshold: 1
@@ -88,7 +90,7 @@ spec:
             port: 8088
             path: /services/collector/health
             scheme: HTTPS
-          initialDelaySeconds: 120
+          initialDelaySeconds: 15
           periodSeconds: 10
           failureThreshold: 3
           successThreshold: 1
