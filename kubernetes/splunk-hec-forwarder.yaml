@@ -29,9 +29,32 @@ spec:
         app: splunk
     spec:
       serviceAccount: fk8splunk
+      volumes:
+      - name: init-hec-inputs
+        emptyDir:
+          medium: "Memory"
+      initContainers:
+      - name: init-hec-token
+        image: busybox
+        volumeMounts:
+        - name: init-hec-inputs
+          mountPath: /init
+        env:
+        - name: SPLUNK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: fk8splunk
+              key: SPLUNK_TOKEN
+        command:
+          - sh
+          - -c
+          - echo "Initializing splunk with HEC-token"; echo -e "[http://fk8splunk-token]\ndescription=fk8splunk\ndisabled=0\nindex=main\ntoken=${SPLUNK_TOKEN}" > /init/inputs.conf
       containers:
       - name: splunk
-        image: splunk/splunk:7.0.0-monitor
+        image: splunk/universalforwarder
+        volumeMounts:
+        - name: init-hec-inputs
+          mountPath: /opt/splunk/etc/apps/splunk_httpinput/local
         env:
         - name: SPLUNK_START_ARGS
           value: "--accept-license"
@@ -39,6 +62,8 @@ spec:
           value: "false"
         - name: SPLUNK_FORWARD_SERVER_1
           value: "example.com:9997"
+        - name: SPLUNK_CMD_1
+          value: http-event-collector enable -uri https://localhost:8089 -enable-ssl 1 -auth admin:changeme
         ports:
         - containerPort: 8088
         resources:
