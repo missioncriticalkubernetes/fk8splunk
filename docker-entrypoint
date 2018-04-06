@@ -2,11 +2,20 @@
 
 set -eufo pipefail
 
+test -z ${DEBUG+x} || set -x
+
 # Transform deprecated options to new style options and print warning
 # 'SPLUNK_HOST=example.com' => 'SPLUNKHEC_OPTION_host=example.com'
 
 function splunkhec_compatability_options() {
-  for option in $(env | grep '^SPLUNK_'); do
+  local old_options=$(echo SPLUNK_{HOST,PROTOCOL,PORT,TOKEN,INDEX,EVENT_HOST,SOURCE,SOURCETYPE,SEND_EVENT_AS_JSON,USEJSON,SEND_BATCHED_EVENTS})
+  for old_option in $old_options; do
+    test -z ${!old_option+x} && continue
+
+    # SPLUNK_PORT might be set by Kubernetes. If it is, ignore it
+    [[ ${old_option} = "SPLUNK_PORT" ]] && [[ ${!old_option} =~ ^tcp:// ]] && continue
+
+    option=$(env | grep "^${old_option}=" | tail -n1)
     echo >&2 "WARNING: Deprecated option used. This will be removed in the future. Please use SPLUNKHEC_OPTION_key=value: '${option/=*/}'"
 
     option=${option/SPLUNK_/SPLUNKHEC_OPTION_}
