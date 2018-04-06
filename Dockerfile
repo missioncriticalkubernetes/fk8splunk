@@ -6,6 +6,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
  && gem install fluentd \
  && fluent-gem install  \
+  oj \
   fluent-mixin-config-placeholders \
   fluent-mixin-plaintextformatter \
   fluent-plugin-splunkhec:1.5 \
