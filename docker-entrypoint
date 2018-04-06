@@ -69,7 +69,6 @@ function k8s_metadata_filter_final_options() {
 
 # Generate configuration and exec into fluentd
 
-splunk_deprecated_options
 splunkhec_compatability_options
 splunkhec_default_options
 splunkhec_final_options
