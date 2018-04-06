@@ -2,16 +2,14 @@
 
 set -eufo pipefail
 
-function splunk_deprecated_options() {
-  for option in $(env | grep '^SPLUNK_'); do
-    echo >&2 "WARNING: Deprecated option used. This will be removed in the future. Please use SPLUNKHEC_OPTION_key=value: '${option/=*/}'"
-  done
-}
+# Transform deprecated options to new style options and print warning
+# 'SPLUNK_HOST=example.com' => 'SPLUNKHEC_OPTION_host=example.com'
 
 function splunkhec_compatability_options() {
   for option in $(env | grep '^SPLUNK_'); do
-    option=${option/SPLUNK_/SPLUNKHEC_OPTION_}
+    echo >&2 "WARNING: Deprecated option used. This will be removed in the future. Please use SPLUNKHEC_OPTION_key=value: '${option/=*/}'"
 
+    option=${option/SPLUNK_/SPLUNKHEC_OPTION_}
     key_upper=${option/SPLUNKHEC_OPTION_/}
     key_upper=${key_upper/=*/}
     key_lower=$(echo ${key_upper} | tr '[:upper:]' '[:lower:]')
@@ -21,8 +19,10 @@ function splunkhec_compatability_options() {
   done
 }
 
+# Set default options for splunkhec
+
 function splunkhec_default_options() {
-  export SPLUNKHEC_OPTION_host=${SPLUNKHEC_OPTION_host:-splunk.kube-system}
+  export SPLUNKHEC_OPTION_host=${SPLUNKHEC_OPTION_host:-splunk.logging}
   export SPLUNKHEC_OPTION_protocol=${SPLUNKHEC_OPTION_protocol:-https}
   export SPLUNKHEC_OPTION_port=${SPLUNKHEC_OPTION_port:-8088}
   export SPLUNKHEC_OPTION_token=${SPLUNKHEC_OPTION_token:-00000000-0000-0000-0000-000000000000}
@@ -30,6 +30,9 @@ function splunkhec_default_options() {
   export SPLUNKHEC_OPTION_send_event_as_json=${SPLUNKHEC_OPTION_send_event_as_json:-true}
   export SPLUNKHEC_OPTION_usejson=${SPLUNKHEC_OPTION_usejson:-true}
 }
+
+# Generate fluentd configuration for splunkhec
+# 'SPLUNKHEC_OPTION_host=example.com' => 'host example.com'
 
 function splunkhec_final_options() {
   SPLUNKHEC_OPTIONS=""
@@ -43,9 +46,14 @@ function splunkhec_final_options() {
   export SPLUNKHEC_OPTIONS
 }
 
+# Set default options for kubernetes_metadata_filter
+
 function k8s_metadata_filter_default_options() {
   export K8S_METADATA_FILTER_OPTION_preserve_json_log=${K8S_METADATA_FILTER_OPTION_preserve_json_log:-"false"}
 }
+
+# Generate fluentd configuration for kubernetes_metadata_filter
+# 'K8S_METADATA_FILTER_OPTION_preserve_json_log=false' => 'preserve_json_log false'
 
 function k8s_metadata_filter_final_options() {
   K8S_METADATA_FILTER_OPTIONS=""

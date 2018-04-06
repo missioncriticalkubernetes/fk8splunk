@@ -54,6 +54,10 @@ Specify your configuration in environment-variables like this:
 
 For a list of all options see: https://github.com/cmeerbeek/fluent-plugin-splunkhec
 
+### DEPRECATION NOTICE
+
+In previous versions it was required to configure the splunkhec plugin using something like `SPLUNK_HOST=example.com`. This functionality is deprecated and a warning will be printed. In the future this functionality will be completely removed.
+
 ## fluent-plugin-kubernetes_metadata_filter
 
 Specify your configuration in environment-variables like this:
