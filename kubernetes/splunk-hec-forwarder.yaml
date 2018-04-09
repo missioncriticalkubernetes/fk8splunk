@@ -40,15 +40,15 @@ spec:
         - name: init-hec-inputs
           mountPath: /init
         env:
-        - name: SPLUNK_TOKEN
+        - name: SPLUNKHEC_OPTION_token
           valueFrom:
             secretKeyRef:
               name: fk8splunk
-              key: SPLUNK_TOKEN
+              key: SPLUNKHEC_OPTION_token
         command:
           - sh
           - -c
-          - echo "Initializing splunk with HEC-token"; echo -e "[http://fk8splunk-token]\ndescription=fk8splunk\ndisabled=0\nindex=main\ntoken=${SPLUNK_TOKEN}" > /init/inputs.conf
+          - echo "Initializing splunk with HEC-token"; echo -e "[http://fk8splunk-token]\ndescription=fk8splunk\ndisabled=0\nindex=main\ntoken=${SPLUNKHEC_OPTION_token}" > /init/inputs.conf
       containers:
       - name: splunk
         image: splunk/universalforwarder

@@ -282,18 +282,10 @@
 
 <filter kubernetes.**>
   @type kubernetes_metadata
+  $K8S_METADATA_FILTER_OPTIONS
 </filter>
 
 <match **>
   @type splunkhec
-  host $SPLUNK_HOST
-  port $SPLUNK_PORT
-  protocol $SPLUNK_PROTOCOL
-  token $SPLUNK_TOKEN
-  index $SPLUNK_INDEX
-  source $SPLUNK_SOURCE
-  sourcetype $SPLUNK_SOURCETYPE
-  usejson $SPLUNK_USEJSON
-  send_event_as_json $SPLUNK_SEND_EVENT_AS_JSON
-  send_batched_events $SPLUNK_SEND_BATCHED_EVENTS
+  $SPLUNKHEC_OPTIONS
 </match>
